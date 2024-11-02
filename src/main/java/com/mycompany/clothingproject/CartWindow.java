@@ -2,38 +2,32 @@ package com.mycompany.clothingproject;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
-class CartWindow {
-    private List<String> cartItems; // قائمة العناصر في السلة
+public class CartWindow {
+    private JPanel panel;
 
-    public CartWindow(List<String> cartItems) {
-        this.cartItems = cartItems;
+    public CartWindow() {
+        // إعداد الخصائص الخاصة بـ CartWindow
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.setBackground(new Color(245, 245, 245));
 
-        JFrame frame = new JFrame("Shopping Cart");
-        frame.setSize(400, 300);
-        frame.setLayout(new BorderLayout());
+        // عنوان الصفحة
+        JLabel titleLabel = new JLabel("Shopping Cart");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(63, 81, 181));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
-        // إعداد لوحة لعرض العناصر في السلة
-        JPanel cartPanel = new JPanel();
-        cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS));
+        // منطقة عرض العناصر في السلة
+        JTextArea cartItemsArea = new JTextArea(10, 30);
+        cartItemsArea.setEditable(false); // لجعل المنطقة غير قابلة للتحرير
+        panel.add(new JScrollPane(cartItemsArea), BorderLayout.CENTER);
 
-        // إضافة العناصر إلى اللوحة
-        for (String item : cartItems) {
-            JLabel itemLabel = new JLabel(item);
-            itemLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
-            cartPanel.add(itemLabel);
-        }
+        // إضافة بعض العناصر التجريبية
+        cartItemsArea.setText("1. Product A\n2. Product B\n3. Product C");
+    }
 
-        JScrollPane scrollPane = new JScrollPane(cartPanel);
-        frame.add(scrollPane, BorderLayout.CENTER);
-
-        // إضافة زر لإغلاق النافذة
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> frame.dispose());
-        frame.add(closeButton, BorderLayout.SOUTH);
-
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public JPanel getPanel() {
+        return panel; // إرجاع اللوحة الخاصة بالسلة
     }
 }
