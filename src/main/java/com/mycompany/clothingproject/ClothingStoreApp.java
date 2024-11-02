@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ClothingStoreApp {
+    private JPanel mainContentPanel; // اللوحة الرئيسية للتبديل بين المحتوى
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ClothingStoreApp().createMainWindow());
@@ -11,49 +12,54 @@ public class ClothingStoreApp {
 
     public void createMainWindow() {
         // إعداد الإطار الرئيسي للنافذة
-        JFrame mainFrame = new JFrame("Clothing Store - Main Window");
-        mainFrame.setSize(600, 450);
+        JFrame mainFrame = new JFrame("Clothing Store");
+        mainFrame.setSize(800, 600);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLayout(new BorderLayout());
 
-        // خلفية ملونة للإطار
-        JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(245, 245, 245)); // لون الخلفية الأساسي
-        mainFrame.add(mainPanel, BorderLayout.CENTER);
-
-        // إنشاء شريط القائمة وتصميمه
+        // إعداد شريط القائمة كـ header ثابت
         JMenuBar menuBar = new JMenuBar();
-        menuBar.setBackground(new Color(63, 81, 181)); // لون خلفية شريط القائمة
+        menuBar.setBackground(new Color(63, 81, 181));
 
-        JMenu menu = new JMenu("Options");
-        menu.setForeground(Color.WHITE); // لون النص في القائمة
-        menu.setFont(new Font("SansSerif", Font.BOLD, 14));
+        JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setForeground(Color.WHITE);
+        optionsMenu.setFont(new Font("SansSerif", Font.BOLD, 14));
 
-        // عناصر القائمة مع تصميمها
         JMenuItem addProduct = new JMenuItem("Add New Product");
-        JMenuItem viewProducts = new JMenuItem("View Products");
         JMenuItem manageOrders = new JMenuItem("Manage Orders");
+        JMenuItem viewProducts = new JMenuItem("View Products");
 
-        // تخصيص عناصر القائمة بألوان وخطوط
-        Color menuItemBackgroundColor = new Color(220, 220, 220);
-        Font menuItemFont = new Font("SansSerif", Font.PLAIN, 12);
+        // تخصيص وتنسيق أزرار القائمة
+        customizeMenuItem(addProduct, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
+        customizeMenuItem(manageOrders, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
+        customizeMenuItem(viewProducts, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
 
-        customizeMenuItem(addProduct, menuItemBackgroundColor, menuItemFont);
-        customizeMenuItem(viewProducts, menuItemBackgroundColor, menuItemFont);
-        customizeMenuItem(manageOrders, menuItemBackgroundColor, menuItemFont);
+        optionsMenu.add(addProduct);
+        optionsMenu.add(manageOrders);
+        optionsMenu.add(viewProducts);
+        menuBar.add(optionsMenu);
 
-        // إضافة العناصر إلى القائمة
-        menu.add(addProduct);
-        menu.add(viewProducts);
-        menu.add(manageOrders);
-        menuBar.add(menu);
-        mainFrame.setJMenuBar(menuBar);
+        // إضافة زر Login كعنصر منفصل
+        JMenuItem loginButton = new JMenuItem("Login");
+        customizeMenuItem(loginButton, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
+        loginButton.addActionListener(e -> openLoginFrame());
+        menuBar.add(loginButton);
+
+        mainFrame.setJMenuBar(menuBar); // تثبيت شريط القائمة في الأعلى
+
+        // إعداد اللوحة الرئيسية للتبديل بين النوافذ
+        mainContentPanel = new JPanel(new BorderLayout());
+        mainFrame.add(mainContentPanel, BorderLayout.CENTER);
+
+        // عرض قائمة المنتجات كواجهة افتراضية
+        openViewProductsWindow();
 
         // إعداد التفاعل مع القائمة
         addProduct.addActionListener(e -> openAddProductWindow());
-        viewProducts.addActionListener(e -> openViewProductsWindow());
         manageOrders.addActionListener(e -> openManageOrdersWindow());
+        viewProducts.addActionListener(e -> openViewProductsWindow());
 
+        mainFrame.setLocationRelativeTo(null); // ظهور النافذة في منتصف الشاشة
         mainFrame.setVisible(true);
     }
 
@@ -64,14 +70,28 @@ public class ClothingStoreApp {
     }
 
     public void openAddProductWindow() {
-        new AddProductWindow();
+        mainContentPanel.removeAll();
+        mainContentPanel.add(new AddProductWindow().getPanel(), BorderLayout.CENTER);
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
     }
 
     public void openViewProductsWindow() {
-        new ViewProductsWindow();
+        mainContentPanel.removeAll();
+        mainContentPanel.add(new ViewProductsWindow().getPanel(), BorderLayout.CENTER); // عرض لوحة المنتجات داخل
+                                                                                        // mainContentPanel
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
     }
 
     public void openManageOrdersWindow() {
-        new ManageOrdersWindow();
+        mainContentPanel.removeAll();
+        mainContentPanel.add(new ManageOrdersWindow().getPanel(), BorderLayout.CENTER);
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
+    }
+
+    public void openLoginFrame() {
+        new LoginFrame(); // فتح إطار تسجيل الدخول
     }
 }

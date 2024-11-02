@@ -3,62 +3,83 @@ package com.mycompany.clothingproject;
 import javax.swing.*;
 import java.awt.*;
 
-class ManageOrdersWindow {
+public class ManageOrdersWindow {
+    private JPanel panel;
+
     public ManageOrdersWindow() {
-        // إعداد الإطار الرئيسي للنافذة
-        JFrame frame = new JFrame("Manage Orders");
-        frame.setSize(500, 250);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-        frame.getContentPane().setBackground(new Color(240, 240, 240)); // لون خلفية النافذة
+        // إعداد اللوحة الرئيسية
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.setBackground(new Color(245, 245, 245)); // لون الخلفية العام
 
-        // إعداد اللوحة الداخلية
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 2, 10, 10)); // تصميم الشبكة مع تباعد بين العناصر
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // مساحة فارغة حول المكونات
-        panel.setBackground(new Color(240, 240, 240));
+        // عنوان الصفحة
+        JLabel titleLabel = new JLabel("Manage Orders", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(63, 81, 181));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // إعداد الخطوط
-        Font labelFont = new Font("SansSerif", Font.BOLD, 14);
-        Font fieldFont = new Font("SansSerif", Font.PLAIN, 12);
+        // لوحة تحتوي على حقول الإدخال
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        inputPanel.setBackground(Color.WHITE);
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // الحقول
+        // إعداد الحقول
         JLabel orderIdLabel = new JLabel("Order ID:");
-        orderIdLabel.setFont(labelFont);
+        orderIdLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        inputPanel.add(orderIdLabel, gbc);
+
         JTextField orderIdField = new JTextField(10);
-        orderIdField.setFont(fieldFont);
+        orderIdField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        inputPanel.add(orderIdField, gbc);
 
         JLabel customerNameLabel = new JLabel("Customer Name:");
-        customerNameLabel.setFont(labelFont);
+        customerNameLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        inputPanel.add(customerNameLabel, gbc);
+
         JTextField customerNameField = new JTextField(15);
-        customerNameField.setFont(fieldFont);
+        customerNameField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        inputPanel.add(customerNameField, gbc);
 
         JLabel statusLabel = new JLabel("Status:");
-        statusLabel.setFont(labelFont);
+        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        inputPanel.add(statusLabel, gbc);
+
         JComboBox<String> statusComboBox = new JComboBox<>(new String[] { "Pending", "Shipped", "Delivered" });
-        statusComboBox.setFont(fieldFont);
+        statusComboBox.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        inputPanel.add(statusComboBox, gbc);
 
-        // إعداد الأزرار
+        // زر لتحديث حالة الطلب
         JButton updateButton = new JButton("Update Order");
-        updateButton.setFont(new Font("SansSerif", Font.BOLD, 12));
-        updateButton.setBackground(new Color(76, 175, 80)); // لون أخضر للأزرار
+        updateButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        updateButton.setBackground(new Color(76, 175, 80)); // لون أخضر
         updateButton.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.CENTER;
+        inputPanel.add(updateButton, gbc);
 
-        // إضافة المكونات إلى اللوحة
-        panel.add(orderIdLabel);
-        panel.add(orderIdField);
-        panel.add(customerNameLabel);
-        panel.add(customerNameField);
-        panel.add(statusLabel);
-        panel.add(statusComboBox);
-        panel.add(new JLabel()); // مساحة فارغة لضبط التباعد
-        panel.add(updateButton);
+        // إضافة العنوان ولوحة الإدخال إلى اللوحة الرئيسية
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(inputPanel, BorderLayout.CENTER);
+    }
 
-        // إضافة اللوحة إلى النافذة
-        frame.add(panel, BorderLayout.CENTER);
-
-        // عرض النافذة
-        frame.setLocationRelativeTo(null); // جعل النافذة تظهر في منتصف الشاشة
-        frame.setVisible(true);
+    public JPanel getPanel() {
+        return panel;
     }
 }
