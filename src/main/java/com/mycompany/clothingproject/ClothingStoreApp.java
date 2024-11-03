@@ -70,8 +70,8 @@ public class ClothingStoreApp {
         productsPanel.setBackground(new Color(240, 240, 240));
 
         String[][] products = {
-                { "/../../../../../../images/shirt.jpg", "Shirt", "$20" },
-                { "/../../../../../../images/Pants.jpg", "Pants", "$30" },
+                { "../../../../resources/images/Hat.jpg", "Shirt", "$20" },
+                { "../../../../resources/images/Bags.jpg", "Pants", "$30" },
                 { "/../../../../../../images/Shoes.jpg", "Shoes", "$40" },
                 { "path/to/dress_image.jpg", "Dress", "$50" },
                 { "path/to/hat_image.jpg", "Hat", "$15" },
