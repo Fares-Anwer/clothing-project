@@ -2,160 +2,180 @@ package com.mycompany.clothingproject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 public class ClothingStoreApp {
 
-    private JPanel mainContentPanel;
-    private List<String[]> cartItems; // قائمة لتخزين المنتجات المضافة إلى السلة
+    private JPanel mainContentPanel; // اللوحة الرئيسية لعرض المحتوى
+    private List<String[]> cartItems; // قائمة العناصر الموجودة في سلة التسوق
 
+    // الدالة الرئيسية لتشغيل التطبيق
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ClothingStoreApp().createMainWindow());
     }
 
+    // دالة لإنشاء نافذة التطبيق الرئيسية
     public void createMainWindow() {
         JFrame mainFrame = new JFrame("Clothing Store");
-        mainFrame.setSize(900, 600);
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setLayout(new BorderLayout());
+        mainFrame.setSize(900, 600); // ضبط حجم النافذة
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // إنهاء التطبيق عند إغلاق النافذة
+        mainFrame.setLayout(new BorderLayout()); // استخدام تخطيط الحدود
 
-        cartItems = new ArrayList<>(); // تهيئة السلة
+        cartItems = new ArrayList<>(); // تهيئة قائمة سلة التسوق
+        JMenuBar menuBar = createMenuBar(); // إنشاء شريط القوائم
+        mainFrame.setJMenuBar(menuBar); // إضافة شريط القوائم إلى الإطار
 
-        JMenuBar menuBar = createMenuBar();
-        mainFrame.setJMenuBar(menuBar);
+        mainContentPanel = new JPanel(new BorderLayout()); // إنشاء لوحة محتوى جديدة
+        mainFrame.add(mainContentPanel, BorderLayout.CENTER); // إضافة اللوحة إلى الإطار
 
-        mainContentPanel = new JPanel(new BorderLayout());
-        mainFrame.add(mainContentPanel, BorderLayout.CENTER);
-
-        showProducts(); // عرض المنتجات بتنسيقها الأصلي
-
-        mainFrame.setLocationRelativeTo(null);
-        mainFrame.setVisible(true);
+        showProducts(); // عرض المنتجات عند فتح التطبيق
+        mainFrame.setLocationRelativeTo(null); // مركز النافذة في الشاشة
+        mainFrame.setVisible(true); // عرض النافذة
     }
 
+    // دالة لإنشاء شريط القوائم
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
-        menuBar.setBackground(new Color(63, 81, 181));
+        menuBar.setBackground(new Color(63, 81, 181)); // تعيين لون خلفية شريط القوائم
 
-        JMenu optionsMenu = new JMenu("Options");
-        optionsMenu.setForeground(Color.WHITE);
-        optionsMenu.setFont(new Font("SansSerif", Font.BOLD, 14));
+        JMenu optionsMenu = new JMenu("Options"); // قائمة الخيارات
+        optionsMenu.setForeground(Color.WHITE); // لون النص
+        optionsMenu.setFont(new Font("SansSerif", Font.BOLD, 14)); // تعيين خط القائمة
 
-        JMenuItem viewProducts = new JMenuItem("View Products");
-        JMenuItem viewCart = new JMenuItem("View Cart");
+        JMenuItem viewProducts = new JMenuItem("View Products"); // عنصر قائمة لعرض المنتجات
+        JMenuItem viewCart = new JMenuItem("View Cart"); // عنصر قائمة لعرض سلة التسوق
 
-        customizeMenuItem(viewProducts, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
-        customizeMenuItem(viewCart, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
-
-        optionsMenu.add(viewProducts);
+        optionsMenu.add(viewProducts); // إضافة العناصر إلى القائمة
         optionsMenu.add(viewCart);
-        menuBar.add(optionsMenu);
+        menuBar.add(optionsMenu); // إضافة القائمة إلى شريط القوائم
 
-        JMenuItem loginButton = new JMenuItem("Login");
-        customizeMenuItem(loginButton, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
-        loginButton.addActionListener(e -> openLoginFrame());
-        menuBar.add(loginButton);
+        JMenuItem loginButton = new JMenuItem("Login"); // عنصر قائمة لتسجيل الدخول
+        menuBar.add(loginButton); // إضافة زر تسجيل الدخول إلى شريط القوائم
 
-        viewProducts.addActionListener(e -> showProducts());
-        viewCart.addActionListener(e -> openCartWindow());
+        // إضافة أحداث الضغط على الأزرار
+        viewProducts.addActionListener(e -> showProducts()); // عرض المنتجات عند الضغط
+        viewCart.addActionListener(e -> openCartWindow()); // فتح نافذة السلة
+        loginButton.addActionListener(e -> openLoginFrame()); // فتح نافذة تسجيل الدخول
 
-        return menuBar;
+        return menuBar; // إرجاع شريط القوائم
     }
 
+    // دالة لعرض المنتجات
     private void showProducts() {
-        mainContentPanel.removeAll();
-        JPanel productsPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // شبكة 3 أعمدة
+        mainContentPanel.removeAll(); // إزالة جميع المكونات السابقة
 
-        productsPanel.setBackground(new Color(240, 240, 240));
+        JPanel productsPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // لوحة جديدة لتخطيط المنتجات
 
+        // بيانات المنتجات (صورة، اسم، سعر)
         String[][] products = {
-                { "../../../../resources/images/Hat.jpg", "Shirt", "$20" },
-                { "../../../../resources/images/Bags.jpg", "Pants", "$30" },
-                { "/../../../../../../images/Shoes.jpg", "Shoes", "$40" },
-                { "path/to/dress_image.jpg", "Dress", "$50" },
-                { "path/to/hat_image.jpg", "Hat", "$15" },
-                { "path/to/bag_image.jpg", "Bag", "$35" },
-                { "path/to/sweater_image.jpg", "Sweater", "$25" },
-                { "path/to/jacket_image.jpg", "Jacket", "$60" },
-                { "path/to/shorts_image.jpg", "Shorts", "$20" },
-                { "path/to/scarf_image.jpg", "Scarf", "$12" },
-                { "path/to/jeans_image.jpg", "Jeans", "$45" },
-                { "path/to/coat_image.jpg", "Coat", "$80" },
-                { "path/to/boots_image.jpg", "Boots", "$55" },
-                { "path/to/t-shirt_image.jpg", "T-Shirt", "$18" },
-                { "path/to/sandals_image.jpg", "Sandals", "$22" },
-                { "path/to/socks_image.jpg", "Socks", "$5" },
+                { "images/Shirt.jpg", "Shirt", "$20" },
+                { "images/Pants.jpg", "Pants", "$30" },
+                { "images/Shoes.jpg", "Shoes", "$40" },
+                { "images/Jacket.jpg", "Jacket", "$60" },
+                { "images/Hat.jpg", "Hat", "$15" },
+                { "images/Sweater.jpg", "Sweater", "$10" },
+                { "images/T-Shirt.jpg", "T-Shirt", "$5" },
+                { "images/Bags.jpg", "Bags", "$25" },
+                { "images/Socks.jpg", "Socks", "$50" },
+                { "images/Jeans.jpg", "Jeans", "$12" },
+                { "images/Scarf.jpg", "Scarf", "$18" },
+                { "images/Shorts.jpg", "Shorts", "$8" }
+
         };
 
+        // إنشاء بطاقات للمنتجات وإضافتها إلى اللوحة
         for (String[] product : products) {
             JPanel productCard = createProductCard(product[0], product[1], product[2]);
             productsPanel.add(productCard);
         }
 
+        // إضافة شريط تمرير للوحة المنتجات
         JScrollPane scrollPane = new JScrollPane(productsPanel);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        mainContentPanel.add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // إخفاء شريط التمرير الأفقي
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // إظهار شريط التمرير العمودي
+                                                                                         // عند الحاجة
 
-        mainContentPanel.revalidate();
-        mainContentPanel.repaint();
+        mainContentPanel.add(scrollPane, BorderLayout.CENTER); // إضافة اللوحة إلى اللوحة الرئيسية
+        mainContentPanel.revalidate(); // تحديث المكونات
+        mainContentPanel.repaint(); // إعادة رسم اللوحة
     }
 
+    // دالة لإنشاء بطاقة المنتج
     private JPanel createProductCard(String imagePath, String productName, String price) {
         JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-        card.setBackground(Color.WHITE);
-        card.setPreferredSize(new Dimension(200, 300));
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS)); // استخدام تخطيط عمودي
+        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)); // تعيين حدود البطاقة
+        card.setBackground(Color.WHITE); // تعيين لون خلفية البطاقة
+        card.setPreferredSize(new Dimension(200, 300)); // تعيين حجم البطاقة
 
-        // الصورة - تأكد من تحديث المسار ليعمل بشكل صحيح
-        ImageIcon productImage = new ImageIcon(imagePath);
+        // تحميل الصورة للمنتج
+        ImageIcon productImage = loadImage(imagePath);
         JLabel imageLabel = new JLabel(productImage);
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // محاذاة الصورة في الوسط
         card.add(imageLabel);
 
-        // اسم المنتج
+        // إضافة اسم المنتج
         JLabel nameLabel = new JLabel(productName);
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16)); // تعيين الخط
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // محاذاة الاسم في الوسط
         card.add(nameLabel);
 
-        // السعر
+        // إضافة سعر المنتج
         JLabel priceLabel = new JLabel(price);
-        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14)); // تعيين الخط
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // محاذاة السعر في الوسط
         card.add(priceLabel);
 
-        // زر "Add to Cart"
+        // إضافة زر "إضافة إلى السلة"
         JButton addToCartButton = new JButton("Add to Cart");
-        addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        addToCartButton.addActionListener(e -> addToCart(new String[] { imagePath, productName, price }));
+        addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT); // محاذاة الزر في الوسط
+        addToCartButton.addActionListener(e -> addToCart(new String[] { imagePath, productName, price })); // إضافة حدث
+                                                                                                           // للزر
         card.add(addToCartButton);
 
-        return card;
+        return card; // إرجاع البطاقة
     }
 
+    // دالة لتحميل الصورة
+    private ImageIcon loadImage(String imagePath) {
+        try {
+            // InputStream imageStream = getClass().getResourceAsStream(imagePath);
+            InputStream imageStream = getClass().getClassLoader().getResourceAsStream("images/" + imagePath);
+
+            if (imageStream != null) {
+                Image originalImage = ImageIO.read(imageStream);
+                Image resizedImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // تغيير حجم الصورة
+                return new ImageIcon(resizedImage); // إرجاع الصورة المعدلة
+            } else {
+                System.out.println("Image not found at: " + imagePath);
+                return new ImageIcon(); // إرجاع أيقونة فارغة إذا لم توجد الصورة
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading image from: " + imagePath + " - " + e.getMessage());
+            return new ImageIcon(); // إرجاع أيقونة فارغة إذا حدث خطأ أثناء التحميل
+        }
+    }
+
+    // دالة لإضافة المنتج إلى السلة
     private void addToCart(String[] product) {
-        cartItems.add(product);
-        JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart.");
+        cartItems.add(product); // إضافة المنتج إلى القائمة
+        JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart."); // عرض رسالة للمستخدم
     }
 
+    // دالة لفتح نافذة السلة
     private void openCartWindow() {
-        CartWindow cartWindow = new CartWindow(cartItems);
-        mainContentPanel.removeAll();
-        mainContentPanel.add(cartWindow.getPanel(), BorderLayout.CENTER);
-        mainContentPanel.revalidate();
-        mainContentPanel.repaint();
+        CartWindow cartWindow = new CartWindow(cartItems); // إنشاء نافذة السلة
+        mainContentPanel.removeAll(); // إزالة المكونات السابقة
+        mainContentPanel.add(cartWindow.getPanel(), BorderLayout.CENTER); // إضافة لوحة السلة
+        mainContentPanel.revalidate(); // تحديث المكونات
+        mainContentPanel.repaint(); // إعادة رسم اللوحة
     }
 
-    private void customizeMenuItem(JMenuItem menuItem, Color backgroundColor, Font font) {
-        menuItem.setBackground(backgroundColor);
-        menuItem.setFont(font);
-        menuItem.setOpaque(true);
-    }
-
-    public void openLoginFrame() {
-        new LoginFrame();
+    // دالة لفتح نافذة تسجيل الدخول
+    private void openLoginFrame() {
+        new LoginFrame(); // إنشاء نافذة تسجيل الدخول
     }
 }
