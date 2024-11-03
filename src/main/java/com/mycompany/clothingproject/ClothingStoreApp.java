@@ -2,10 +2,13 @@ package com.mycompany.clothingproject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClothingStoreApp {
 
-    private JPanel mainContentPanel; // اللوحة الرئيسية للتبديل بين المحتوى
+    private JPanel mainContentPanel;
+    private List<String[]> cartItems; // قائمة لتخزين المنتجات المضافة إلى السلة
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ClothingStoreApp().createMainWindow());
@@ -17,18 +20,17 @@ public class ClothingStoreApp {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLayout(new BorderLayout());
 
-        // إعداد شريط القائمة كـ header ثابت
-        JMenuBar menuBar = createMenuBar();
-        mainFrame.setJMenuBar(menuBar); // تثبيت شريط القائمة في الأعلى
+        cartItems = new ArrayList<>(); // تهيئة السلة
 
-        // إعداد اللوحة الرئيسية للتبديل بين النوافذ
+        JMenuBar menuBar = createMenuBar();
+        mainFrame.setJMenuBar(menuBar);
+
         mainContentPanel = new JPanel(new BorderLayout());
         mainFrame.add(mainContentPanel, BorderLayout.CENTER);
 
-        // عرض قائمة المنتجات كواجهة افتراضية
-        showProducts();
+        showProducts(); // عرض المنتجات بتنسيقها الأصلي
 
-        mainFrame.setLocationRelativeTo(null); // ظهور النافذة في منتصف الشاشة
+        mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
 
@@ -43,7 +45,6 @@ public class ClothingStoreApp {
         JMenuItem viewProducts = new JMenuItem("View Products");
         JMenuItem viewCart = new JMenuItem("View Cart");
 
-        // تخصيص وتنسيق عناصر القائمة
         customizeMenuItem(viewProducts, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
         customizeMenuItem(viewCart, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
 
@@ -51,13 +52,11 @@ public class ClothingStoreApp {
         optionsMenu.add(viewCart);
         menuBar.add(optionsMenu);
 
-        // زر تسجيل الدخول كعنصر منفصل
         JMenuItem loginButton = new JMenuItem("Login");
         customizeMenuItem(loginButton, new Color(220, 220, 220), new Font("SansSerif", Font.PLAIN, 12));
         loginButton.addActionListener(e -> openLoginFrame());
         menuBar.add(loginButton);
 
-        // إعداد التفاعل مع عناصر القائمة
         viewProducts.addActionListener(e -> showProducts());
         viewCart.addActionListener(e -> openCartWindow());
 
@@ -66,15 +65,14 @@ public class ClothingStoreApp {
 
     private void showProducts() {
         mainContentPanel.removeAll();
-        JPanel productsPanel = new JPanel();
-        productsPanel.setLayout(new GridLayout(0, 3, 15, 15)); // 3 أعمدة مع مسافة بين العناصر
-        productsPanel.setBackground(new Color(240, 240, 240)); // لون الخلفية
+        JPanel productsPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // شبكة 3 أعمدة
 
-        // بيانات المنتجات
+        productsPanel.setBackground(new Color(240, 240, 240));
+
         String[][] products = {
-                { "path/to/shirt_image.jpg", "Shirt", "$20" },
-                { "path/to/pants_image.jpg", "Pants", "$30" },
-                { "path/to/shoes_image.jpg", "Shoes", "$40" },
+                { "/../../../../../../images/shirt.jpg", "Shirt", "$20" },
+                { "/../../../../../../images/Pants.jpg", "Pants", "$30" },
+                { "/../../../../../../images/Shoes.jpg", "Shoes", "$40" },
                 { "path/to/dress_image.jpg", "Dress", "$50" },
                 { "path/to/hat_image.jpg", "Hat", "$15" },
                 { "path/to/bag_image.jpg", "Bag", "$35" },
@@ -111,35 +109,44 @@ public class ClothingStoreApp {
         card.setBackground(Color.WHITE);
         card.setPreferredSize(new Dimension(200, 300));
 
-        // إضافة الصورة
-        ImageIcon productImage = new ImageIcon(imagePath); // تعديل هنا بحيث يتم وضع المسار الصحيح للصور
+        // الصورة - تأكد من تحديث المسار ليعمل بشكل صحيح
+        ImageIcon productImage = new ImageIcon(imagePath);
         JLabel imageLabel = new JLabel(productImage);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         card.add(imageLabel);
 
-        // إضافة اسم المنتج
+        // اسم المنتج
         JLabel nameLabel = new JLabel(productName);
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        card.add(Box.createRigidArea(new Dimension(0, 10))); // مسافة صغيرة
         card.add(nameLabel);
 
-        // إضافة السعر
+        // السعر
         JLabel priceLabel = new JLabel(price);
         priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        card.add(Box.createRigidArea(new Dimension(0, 5))); // مسافة صغيرة
         card.add(priceLabel);
 
-        // زر لإضافة المنتج إلى السلة
+        // زر "Add to Cart"
         JButton addToCartButton = new JButton("Add to Cart");
         addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        addToCartButton.addActionListener(
-                e -> JOptionPane.showMessageDialog(card, productName + " has been added to the cart."));
-        card.add(Box.createRigidArea(new Dimension(0, 10))); // مسافة صغيرة
+        addToCartButton.addActionListener(e -> addToCart(new String[] { imagePath, productName, price }));
         card.add(addToCartButton);
 
         return card;
+    }
+
+    private void addToCart(String[] product) {
+        cartItems.add(product);
+        JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart.");
+    }
+
+    private void openCartWindow() {
+        CartWindow cartWindow = new CartWindow(cartItems);
+        mainContentPanel.removeAll();
+        mainContentPanel.add(cartWindow.getPanel(), BorderLayout.CENTER);
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
     }
 
     private void customizeMenuItem(JMenuItem menuItem, Color backgroundColor, Font font) {
@@ -149,13 +156,6 @@ public class ClothingStoreApp {
     }
 
     public void openLoginFrame() {
-        new LoginFrame(); // استدعاء التصميم الجاهز لتسجيل الدخول
-    }
-
-    public void openCartWindow() {
-        mainContentPanel.removeAll();
-        mainContentPanel.add(new CartWindow().getPanel(), BorderLayout.CENTER); // استدعاء تصميم السلة
-        mainContentPanel.revalidate();
-        mainContentPanel.repaint();
+        new LoginFrame();
     }
 }

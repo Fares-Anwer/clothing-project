@@ -2,32 +2,52 @@ package com.mycompany.clothingproject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CartWindow {
-    private JPanel panel;
+    private JPanel cartPanel;
+    private List<String[]> cartItems;
 
-    public CartWindow() {
-        // إعداد الخصائص الخاصة بـ CartWindow
-        panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.setBackground(new Color(245, 245, 245));
+    public CartWindow(List<String[]> cartItems) {
+        this.cartItems = cartItems;
+        createCartUI();
+    }
 
-        // عنوان الصفحة
-        JLabel titleLabel = new JLabel("Shopping Cart");
+    private void createCartUI() {
+        cartPanel = new JPanel();
+        cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS));
+        cartPanel.setBackground(new Color(250, 250, 250));
+
+        JLabel titleLabel = new JLabel("Your Shopping Cart");
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-        titleLabel.setForeground(new Color(63, 81, 181));
-        panel.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cartPanel.add(titleLabel);
+        cartPanel.add(Box.createRigidArea(new Dimension(0, 20))); // مساحة صغيرة بين العنوان والعناصر
 
-        // منطقة عرض العناصر في السلة
-        JTextArea cartItemsArea = new JTextArea(10, 30);
-        cartItemsArea.setEditable(false); // لجعل المنطقة غير قابلة للتحرير
-        panel.add(new JScrollPane(cartItemsArea), BorderLayout.CENTER);
+        if (cartItems.isEmpty()) {
+            JLabel emptyLabel = new JLabel("Your cart is empty.");
+            emptyLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            cartPanel.add(emptyLabel);
+        } else {
+            for (String[] item : cartItems) {
+                JPanel itemPanel = new JPanel();
+                itemPanel.setLayout(new BorderLayout());
+                itemPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                itemPanel.setBackground(Color.WHITE);
 
-        // إضافة بعض العناصر التجريبية
-        cartItemsArea.setText("1. Product A\n2. Product B\n3. Product C");
+                JLabel nameLabel = new JLabel(item[1] + " - " + item[2]);
+                nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+                itemPanel.add(nameLabel, BorderLayout.CENTER);
+
+                cartPanel.add(itemPanel);
+                cartPanel.add(Box.createRigidArea(new Dimension(0, 10))); // مسافة صغيرة بين العناصر
+            }
+        }
     }
 
     public JPanel getPanel() {
-        return panel; // إرجاع اللوحة الخاصة بالسلة
+        return cartPanel;
     }
 }
