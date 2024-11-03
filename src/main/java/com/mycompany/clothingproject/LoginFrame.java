@@ -46,6 +46,8 @@ public class LoginFrame extends JFrame {
         gbc.anchor = GridBagConstraints.WEST; // محاذاة العنصر إلى الغرب
         panel.add(usernameField, gbc); // إضافة حقل اسم المستخدم إلى اللوحة
 
+        // تأكد من التحقق من أن الاتصال ليس null قبل استخدامه
+
         // إعداد حقل كلمة المرور
         JLabel passwordLabel = new JLabel("Password:"); // إنشاء تسمية لحقل كلمة المرور
         passwordLabel.setFont(new Font("SansSerif", Font.PLAIN, 14)); // تعيين نوع وحجم الخط
