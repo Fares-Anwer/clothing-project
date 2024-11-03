@@ -2,6 +2,8 @@ package com.mycompany.clothingproject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class LoginFrame extends JFrame {
 
@@ -70,6 +72,36 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(loginButton, gbc);
+
+        // زر "I do not have an account"
+        JButton registerRedirectButton = new JButton("I do not have an account");
+        registerRedirectButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        registerRedirectButton.setForeground(new Color(63, 81, 181)); // لون نص الزر
+        registerRedirectButton.setBackground(Color.WHITE);
+        registerRedirectButton.setBorderPainted(false);
+        registerRedirectButton.setFocusPainted(false);
+        registerRedirectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        gbc.gridy = 4;
+        panel.add(registerRedirectButton, gbc);
+
+        // حدث الضغط على زر "I do not have an account"
+        registerRedirectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // فتح نافذة التسجيل عند الضغط على الزر
+                JFrame registerFrame = new JFrame("Register");
+                registerFrame.setSize(500, 400);
+                registerFrame.setLocationRelativeTo(null);
+                registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+                // إضافة واجهة التسجيل إلى الإطار الجديد
+                registerFrame.add(new RegisterUserWindow().getPanel());
+                registerFrame.setVisible(true);
+
+                // إغلاق نافذة تسجيل الدخول
+                dispose();
+            }
+        });
 
         // إضافة اللوحة إلى الإطار
         add(panel, BorderLayout.CENTER);

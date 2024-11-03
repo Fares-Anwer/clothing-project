@@ -4,22 +4,29 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ViewProductsWindow {
-    private JPanel panel;
-
     public ViewProductsWindow() {
-        panel = new JPanel();
-        panel.setLayout(new GridLayout(0, 3, 10, 10));
-        panel.setBackground(new Color(240, 240, 240));
+        // إعداد الإطار الرئيسي
+        JFrame frame = new JFrame("View Products");
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
 
-        // إضافة مثال للمنتجات
+        // إعداد لوحة المنتجات
+        JPanel productsPanel = new JPanel();
+        productsPanel.setLayout(new GridLayout(0, 3, 10, 10));
+        productsPanel.setBackground(new Color(240, 240, 240));
+
+        // مثال على المنتجات
         for (int i = 1; i <= 6; i++) {
             JPanel productCard = createProductCard("Product " + i, "$" + (i * 10));
-            panel.add(productCard);
+            productsPanel.add(productCard);
         }
-    }
 
-    public JPanel getPanel() {
-        return panel; // إرجاع اللوحة
+        JScrollPane scrollPane = new JScrollPane(productsPanel);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     private JPanel createProductCard(String productName, String price) {
