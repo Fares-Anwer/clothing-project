@@ -1,13 +1,20 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+package com.mycompany.clothingproject;
+
+import java.sql.*;
+import javax.swing.*;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/online_store";
-    private static final String USER = "root";
-    private static final String PASSWORD = "your_password";
+    Connection conn = null;
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public static Connection ConnecrDB() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:Proma.db");
+            JOptionPane.showMessageDialog(null, "Connection Established");
+            return conn;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            return null;
+        }
     }
 }
