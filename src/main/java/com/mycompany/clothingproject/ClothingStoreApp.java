@@ -54,12 +54,17 @@ public class ClothingStoreApp {
         viewCart.setBackground(new Color(77, 121, 255));
         viewCart.setForeground(Color.WHITE);
 
+        JMenuItem addProductItem = new JMenuItem("Add Product"); // عنصر "Add Product" الجديد
+        addProductItem.setBackground(new Color(77, 121, 255));
+        addProductItem.setForeground(Color.WHITE);
+
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setBackground(new Color(77, 121, 255));
         exitItem.setForeground(Color.WHITE);
 
         optionsMenu.add(viewProducts);
         optionsMenu.add(viewCart);
+        optionsMenu.add(addProductItem); // إضافة عنصر "Add Product" إلى القائمة
         optionsMenu.addSeparator();
         optionsMenu.add(exitItem);
 
@@ -73,6 +78,7 @@ public class ClothingStoreApp {
         // أحداث الضغط على الأزرار
         viewProducts.addActionListener(e -> showProducts());
         viewCart.addActionListener(e -> openCartWindow());
+        addProductItem.addActionListener(e -> openAddProductWindow()); // حدث الضغط لفتح نافذة إضافة المنتج
         loginButton.addActionListener(e -> openLoginFrame());
         exitItem.addActionListener(e -> System.exit(0));
 
@@ -186,8 +192,18 @@ public class ClothingStoreApp {
         mainContentPanel.repaint(); // إعادة رسم اللوحة
     }
 
+    // دالة لفتح نافذة إضافة المنتج
+    private void openAddProductWindow() {
+        AddProductWindow addProductWindow = new AddProductWindow(); // إنشاء نافذة إضافة المنتج
+        mainContentPanel.removeAll(); // إزالة المحتويات السابقة
+        mainContentPanel.add(addProductWindow.getPanel(), BorderLayout.CENTER); // إضافة اللوحة الجديدة
+        mainContentPanel.revalidate(); // تحديث المحتويات
+        mainContentPanel.repaint(); // إعادة رسم اللوحة
+    }
+
     // دالة لفتح نافذة تسجيل الدخول
     private void openLoginFrame() {
         new LoginFrame(); // إنشاء نافذة تسجيل الدخول
     }
+
 }
