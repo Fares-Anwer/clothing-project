@@ -173,7 +173,7 @@ public class AddProductWindow {
             throws SQLException {
         String url = "jdbc:sqlite:C:\\Users\\pc\\Desktop\\third year\\clothing-project\\database.db";
         Connection conn = DriverManager.getConnection(url);
-        String sql = "INSERT INTO products (name, price, description, image) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO product (name, price, description, image) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.setDouble(2, price);
