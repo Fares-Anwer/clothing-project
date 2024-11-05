@@ -3,6 +3,11 @@ package com.mycompany.clothingproject;
 import javax.swing.*;
 import java.awt.*;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -111,30 +116,39 @@ public class ClothingStoreApp {
     private void showProducts() {
         mainContentPanel.removeAll();
 
+        // إنشاء لوحة لعرض المنتجات في تنسيق Grid
         JPanel productsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
-        productsPanel.setBackground(new Color(230, 230, 250)); // لون خلفية اللوحة التي تحتوي المنتجات
+        productsPanel.setBackground(new Color(230, 230, 250));
 
-        // بيانات المنتجات (صورة، اسم، سعر)
-        String[][] products = {
-                { "/src/main/resources/datab", "Shirt", "$20" },
-                { "images/Pants.jpg", "Pants", "$30" },
-                { "images/Shoes.jpg", "Shoes", "$40" },
-                { "images/Jacket.jpg", "Jacket", "$60" },
-                { "images/Hat.jpg", "Hat", "$15" },
-                { "images/Sweater.jpg", "Sweater", "$10" },
-                { "images/T-Shirt.jpg", "T-Shirt", "$5" },
-                { "images/Bags.jpg", "Bags", "$25" },
-                { "images/Socks.jpg", "Socks", "$50" },
-                { "images/Jeans.jpg", "Jeans", "$12" },
-                { "images/Scarf.jpg", "Scarf", "$18" },
-                { "images/Shorts.jpg", "Shorts", "$8" }
-        };
+        // استعلام لقاعدة البيانات لجلب المنتجات
+        String sql = "SELECT name, price, description, image FROM product";
 
-        for (String[] product : products) {
-            JPanel productCard = createProductCard(product[0], product[1], product[2]);
-            productsPanel.add(productCard);
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()) {
+
+            // الانتقال عبر النتائج وإضافة كل منتج إلى الواجهة
+            while (rs.next()) {
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                String description = rs.getString("description");
+                byte[] imageBytes = rs.getBytes("image");
+
+                // تحويل الصورة من byte array إلى ImageIcon
+                ImageIcon productImage = new ImageIcon(imageBytes);
+                productImage = new ImageIcon(productImage.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
+
+                // إنشاء بطاقة المنتج
+                JPanel productCard = createProductCard(productImage, name, "$" + price);
+                productsPanel.add(productCard);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading products: " + e.getMessage());
         }
 
+        // إضافة شريط التمرير للوحة المنتجات
         JScrollPane scrollPane = new JScrollPane(productsPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -226,6 +240,39 @@ public class ClothingStoreApp {
     // دالة لفتح نافذة تسجيل الدخول
     private void openLoginFrame() {
         new LoginFrame(); // إنشاء نافذة تسجيل الدخول
+    }
+
+    private JPanel createProductCard(ImageIcon productImage, String productName, String price) {
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBorder(BorderFactory.createLineBorder(new Color(169, 169, 169), 1));
+        card.setBackground(new Color(255, 255, 240));
+        card.setPreferredSize(new Dimension(200, 300));
+
+        JLabel imageLabel = new JLabel(productImage);
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(imageLabel);
+
+        JLabel nameLabel = new JLabel(productName);
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        nameLabel.setForeground(new Color(51, 51, 102));
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(nameLabel);
+
+        JLabel priceLabel = new JLabel(price);
+        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        priceLabel.setForeground(new Color(0, 100, 0));
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(priceLabel);
+
+        JButton addToCartButton = new JButton("Add to Cart");
+        addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addToCartButton.setBackground(new Color(72, 209, 204));
+        addToCartButton.setForeground(Color.WHITE);
+        addToCartButton.addActionListener(e -> addToCart(new String[] { productName, price }));
+        card.add(addToCartButton);
+
+        return card;
     }
 
 }
