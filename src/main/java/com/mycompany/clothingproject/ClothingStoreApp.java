@@ -75,7 +75,7 @@ public class ClothingStoreApp {
             if (isLoggedIn) {
                 openAddProductWindow(); // فتح نافذة إضافة المنتج إذا كان المستخدم مسجلاً للدخول
             } else {
-                openAddProductWindow(); // فتح نافذة تسجيل الدخول إذا لم يكن مسجلاً
+                openLoginFrame(); // فتح نافذة تسجيل الدخول إذا لم يكن مسجلاً
             }
         });
 
@@ -214,9 +214,15 @@ public class ClothingStoreApp {
     }
 
     // دالة لإضافة المنتج إلى السلة
+    // دالة لإضافة المنتج إلى السلة
     private void addToCart(String[] product) {
-        cartItems.add(product); // إضافة المنتج إلى القائمة
-        JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart."); // عرض رسالة للمستخدم
+        if (isLoggedIn) { // تحقق من حالة تسجيل الدخول
+            cartItems.add(product); // إضافة المنتج إلى القائمة
+            JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart."); // عرض رسالة للمستخدم
+        } else {
+            // إذا لم يكن المستخدم مسجلاً، افتح نافذة تسجيل الدخول
+            openLoginFrame();
+        }
     }
 
     // دالة لفتح نافذة السلة
