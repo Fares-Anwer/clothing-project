@@ -9,7 +9,8 @@ public class DatabaseConnection {
     public static Connection ConnecrDB() {
         try {
             Class.forName("org.sqlite.JDBC");
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:Proma.db");
+            Connection conn = DriverManager
+                    .getConnection("jdbc:sqlite:C:\\Users\\pc\\Desktop\\third year\\clothing-project\\database.db");
             JOptionPane.showMessageDialog(null, "Connection Established");
             return conn;
         } catch (Exception e) {

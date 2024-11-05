@@ -11,4 +11,16 @@
         <maven.compiler.target>18</maven.compiler.target>
         <exec.mainClass>com.mycompany.first_pr.First_pr</exec.mainClass>
     </properties>
+    <dependencies>
+    <!-- مكتبات أخرى قد تكون موجودة في مشروعك -->
+    
+    <!-- مكتبة SQLite JDBC -->
+    <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.36.0.3</version>
+    </dependency>
+    
+</dependencies>
 </project>
+

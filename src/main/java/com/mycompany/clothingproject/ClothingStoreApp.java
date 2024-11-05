@@ -70,7 +70,7 @@ public class ClothingStoreApp {
             if (isLoggedIn) {
                 openAddProductWindow(); // فتح نافذة إضافة المنتج إذا كان المستخدم مسجلاً للدخول
             } else {
-                openLoginFrame(); // فتح نافذة تسجيل الدخول إذا لم يكن مسجلاً
+                openAddProductWindow(); // فتح نافذة تسجيل الدخول إذا لم يكن مسجلاً
             }
         });
 
