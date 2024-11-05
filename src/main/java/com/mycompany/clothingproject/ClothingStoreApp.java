@@ -38,6 +38,8 @@ public class ClothingStoreApp {
 
     // دالة لإنشاء شريط القوائم
     // دالة لإنشاء شريط القوائم
+    private boolean isLoggedIn = false; // متغير لتتبع حالة تسجيل الدخول
+
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(new Color(63, 81, 181)); // لون خلفية شريط القوائم
@@ -53,10 +55,24 @@ public class ClothingStoreApp {
         JMenuItem viewCart = new JMenuItem("View Cart");
         viewCart.setBackground(new Color(77, 121, 255));
         viewCart.setForeground(Color.WHITE);
+        viewCart.addActionListener(e -> {
+            if (isLoggedIn) {
+                openCartWindow(); // فتح نافذة السلة إذا كان المستخدم مسجلاً للدخول
+            } else {
+                openLoginFrame(); // فتح نافذة تسجيل الدخول إذا لم يكن مسجلاً
+            }
+        });
 
         JMenuItem addProductItem = new JMenuItem("Add Product"); // عنصر "Add Product" الجديد
         addProductItem.setBackground(new Color(77, 121, 255));
         addProductItem.setForeground(Color.WHITE);
+        addProductItem.addActionListener(e -> {
+            if (isLoggedIn) {
+                openAddProductWindow(); // فتح نافذة إضافة المنتج إذا كان المستخدم مسجلاً للدخول
+            } else {
+                openLoginFrame(); // فتح نافذة تسجيل الدخول إذا لم يكن مسجلاً
+            }
+        });
 
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setBackground(new Color(77, 121, 255));
@@ -73,16 +89,22 @@ public class ClothingStoreApp {
         JMenuItem loginButton = new JMenuItem("Login");
         loginButton.setBackground(new Color(77, 121, 255)); // لون خلفية زر تسجيل الدخول
         loginButton.setForeground(Color.WHITE);
-        menuBar.add(loginButton);
+        loginButton.addActionListener(e -> {
+            if (!isLoggedIn) {
+                openLoginFrame(); // فتح نافذة تسجيل الدخول
+            }
+        });
 
-        // أحداث الضغط على الأزرار
-        viewProducts.addActionListener(e -> showProducts());
-        viewCart.addActionListener(e -> openCartWindow());
-        addProductItem.addActionListener(e -> openAddProductWindow()); // حدث الضغط لفتح نافذة إضافة المنتج
-        loginButton.addActionListener(e -> openLoginFrame());
         exitItem.addActionListener(e -> System.exit(0));
 
+        menuBar.add(loginButton);
+
         return menuBar;
+    }
+
+    // دالة لتحديث حالة تسجيل الدخول
+    public void updateLoginStatus(boolean loggedIn) {
+        isLoggedIn = loggedIn; // تحديث حالة تسجيل الدخول
     }
 
     // دالة لعرض المنتجات
@@ -94,7 +116,7 @@ public class ClothingStoreApp {
 
         // بيانات المنتجات (صورة، اسم، سعر)
         String[][] products = {
-                { "images/Shirt.jpg", "Shirt", "$20" },
+                { "/src/main/resources/datab", "Shirt", "$20" },
                 { "images/Pants.jpg", "Pants", "$30" },
                 { "images/Shoes.jpg", "Shoes", "$40" },
                 { "images/Jacket.jpg", "Jacket", "$60" },

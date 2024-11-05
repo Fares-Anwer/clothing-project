@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class LoginFrame extends JFrame {
 
@@ -46,8 +50,6 @@ public class LoginFrame extends JFrame {
         gbc.anchor = GridBagConstraints.WEST; // محاذاة العنصر إلى الغرب
         panel.add(usernameField, gbc); // إضافة حقل اسم المستخدم إلى اللوحة
 
-        // تأكد من التحقق من أن الاتصال ليس null قبل استخدامه
-
         // إعداد حقل كلمة المرور
         JLabel passwordLabel = new JLabel("Password:"); // إنشاء تسمية لحقل كلمة المرور
         passwordLabel.setFont(new Font("SansSerif", Font.PLAIN, 14)); // تعيين نوع وحجم الخط
@@ -84,6 +86,23 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 4; // تعيين موضع العنصر
         panel.add(registerRedirectButton, gbc); // إضافة زر التحويل إلى اللوحة
 
+        // إضافة حدث الضغط على زر تسجيل الدخول
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText(); // الحصول على اسم المستخدم
+            String password = new String(passwordField.getPassword()); // الحصول على كلمة المرور
+
+            // التحقق من بيانات تسجيل الدخول
+            if (authenticateUser(username, password)) {
+                JOptionPane.showMessageDialog(this, "Login successful!");
+                // يمكنك استدعاء دالة لتحديث حالة تسجيل الدخول هنا
+                // مثال: updateLoginStatus(true);
+                dispose(); // إغلاق نافذة تسجيل الدخول
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Failed",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         // إضافة حدث الضغط على زر التحويل إلى التسجيل
         registerRedirectButton.addActionListener(new ActionListener() {
             @Override
@@ -103,5 +122,21 @@ public class LoginFrame extends JFrame {
         // إضافة اللوحة إلى الإطار الرئيسي
         add(panel, BorderLayout.CENTER); // إضافة اللوحة إلى الجزء الأوسط من الإطار
         setVisible(true); // جعل الإطار مرئيًا
+    }
+
+    private boolean authenticateUser(String username, String password) {
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:path_to_your_database.db")) {
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, username);
+                pstmt.setString(2, password); // تأكد من تشفير كلمة المرور في قاعدة البيانات
+                ResultSet rs = pstmt.executeQuery();
+
+                return rs.next(); // إذا كانت هناك نتائج، فهذا يعني أن بيانات تسجيل الدخول صحيحة
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // فشل الاتصال بقاعدة البيانات
+        }
     }
 }
