@@ -102,7 +102,7 @@ public class RegisterUserWindow {
     }
 
     private boolean addUserToDatabase(String username, String email, String password) {
-        String url = "jdbc:sqlite:C:\\\\Users\\\\pc\\\\Desktop\\\\third year\\\\clothing-project\\\\database.db";
+        String url = "jdbc:sqlite:database.db";
         String selectQuery = "SELECT * FROM users WHERE username = ? OR email = ?";
         String insertQuery = "INSERT INTO users(username, email, password) VALUES(?, ?, ?)";
 

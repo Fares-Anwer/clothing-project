@@ -126,7 +126,7 @@ public class LoginFrame extends JFrame {
 
     private boolean authenticateUser(String username, String password) {
         try (Connection conn = DriverManager
-                .getConnection("jdbc:sqlite:C:\\Users\\pc\\Desktop\\third year\\clothing-project\\database.db")) {
+                .getConnection("jdbc:sqlite:database.db")) {
             String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, username);

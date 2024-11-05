@@ -10,7 +10,7 @@ public class DatabaseConnection {
         try {
             Class.forName("org.sqlite.JDBC");
             Connection conn = DriverManager
-                    .getConnection("jdbc:sqlite:C:\\Users\\pc\\Desktop\\third year\\clothing-project\\database.db");
+                    .getConnection("jdbc:sqlite:database.db");
             JOptionPane.showMessageDialog(null, "Connection Established");
             return conn;
         } catch (Exception e) {
