@@ -111,7 +111,7 @@ public class RegisterUserWindow {
         String insertQuery = "INSERT INTO users(username, email, password) VALUES(?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(url)) {
-            // التحقق من عدم وجود المستخدم
+            // التحقق من عدم وجود المستخدم أو البريد الإلكتروني
             try (PreparedStatement selectStmt = conn.prepareStatement(selectQuery)) {
                 selectStmt.setString(1, username);
                 selectStmt.setString(2, email);
@@ -121,13 +121,13 @@ public class RegisterUserWindow {
                 }
             }
 
-            // إضافة المستخدم الجديد
+            // إضافة المستخدم الجديد مباشرة بدون تشفير كلمة المرور
             try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
                 insertStmt.setString(1, username);
                 insertStmt.setString(2, email);
-                insertStmt.setString(3, password); // تأكد من تشفير كلمة المرور قبل تخزينها
+                insertStmt.setString(3, password); // تخزين كلمة المرور كما هي
                 insertStmt.executeUpdate();
-                return true;
+                return true; // تم التسجيل بنجاح
             }
 
         } catch (Exception e) {
