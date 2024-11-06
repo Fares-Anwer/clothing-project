@@ -9,8 +9,11 @@ import java.awt.*;
 
 public class RegisterUserWindow {
     private JPanel panel;
+    private ClothingStoreApp app; // مرجع لتطبيق ClothingStoreApp
 
-    public RegisterUserWindow() {
+    public RegisterUserWindow(ClothingStoreApp app) {
+        this.app = app; // تمرير التطبيق للتحكم بحالة تسجيل الدخول
+
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
@@ -91,6 +94,7 @@ public class RegisterUserWindow {
             if (addUserToDatabase(username, email, password)) {
                 JOptionPane.showMessageDialog(panel, "Registration successful!", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
+                app.updateLoginStatus(true); // تحديث حالة تسجيل الدخول وإعادة التوجيه للصفحة المطلوبة
             } else {
                 JOptionPane.showMessageDialog(panel, "Username or email already exists.", "Registration Failed",
                         JOptionPane.ERROR_MESSAGE);

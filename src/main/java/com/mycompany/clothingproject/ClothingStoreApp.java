@@ -2,7 +2,6 @@ package com.mycompany.clothingproject;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,12 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 public class ClothingStoreApp {
 
     private JPanel mainContentPanel; // اللوحة الرئيسية لعرض المحتوى
     private List<String[]> cartItems; // قائمة العناصر الموجودة في سلة التسوق
+    private boolean isLoggedIn = false; // متغير لتتبع حالة تسجيل الدخول
 
     // الدالة الرئيسية لتشغيل التطبيق
     public static void main(String[] args) {
@@ -42,9 +41,6 @@ public class ClothingStoreApp {
     }
 
     // دالة لإنشاء شريط القوائم
-    // دالة لإنشاء شريط القوائم
-    private boolean isLoggedIn = false; // متغير لتتبع حالة تسجيل الدخول
-
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(new Color(63, 81, 181)); // لون خلفية شريط القوائم
@@ -100,11 +96,27 @@ public class ClothingStoreApp {
             }
         });
 
+        JMenuItem registerButton = new JMenuItem("Register"); // زر "Register" الجديد
+        registerButton.setBackground(new Color(77, 121, 255));
+        registerButton.setForeground(Color.WHITE);
+        registerButton.addActionListener(e -> openRegisterWindow()); // فتح نافذة التسجيل
+
         exitItem.addActionListener(e -> System.exit(0));
 
         menuBar.add(loginButton);
+        menuBar.add(registerButton); // إضافة زر "Register" إلى شريط القوائم
 
         return menuBar;
+    }
+
+    // دالة لفتح نافذة التسجيل
+    private void openRegisterWindow() {
+        JFrame registerFrame = new JFrame("Register User");
+        RegisterUserWindow registerWindow = new RegisterUserWindow(this);
+        registerFrame.add(registerWindow.getPanel());
+        registerFrame.setSize(400, 300);
+        registerFrame.setLocationRelativeTo(null);
+        registerFrame.setVisible(true);
     }
 
     // دالة لتحديث حالة تسجيل الدخول
@@ -116,29 +128,24 @@ public class ClothingStoreApp {
     private void showProducts() {
         mainContentPanel.removeAll();
 
-        // إنشاء لوحة لعرض المنتجات في تنسيق Grid
         JPanel productsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         productsPanel.setBackground(new Color(230, 230, 250));
 
-        // استعلام لقاعدة البيانات لجلب المنتجات
         String sql = "SELECT name, price, description, image FROM product";
 
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:database.db");
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()) {
 
-            // الانتقال عبر النتائج وإضافة كل منتج إلى الواجهة
             while (rs.next()) {
                 String name = rs.getString("name");
                 double price = rs.getDouble("price");
                 String description = rs.getString("description");
                 byte[] imageBytes = rs.getBytes("image");
 
-                // تحويل الصورة من byte array إلى ImageIcon
                 ImageIcon productImage = new ImageIcon(imageBytes);
                 productImage = new ImageIcon(productImage.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
 
-                // إنشاء بطاقة المنتج
                 JPanel productCard = createProductCard(productImage, name, "$" + price);
                 productsPanel.add(productCard);
             }
@@ -148,7 +155,6 @@ public class ClothingStoreApp {
             JOptionPane.showMessageDialog(null, "Error loading products: " + e.getMessage());
         }
 
-        // إضافة شريط التمرير للوحة المنتجات
         JScrollPane scrollPane = new JScrollPane(productsPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -156,96 +162,6 @@ public class ClothingStoreApp {
         mainContentPanel.add(scrollPane, BorderLayout.CENTER);
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
-    }
-
-    // دالة لإنشاء بطاقة المنتج
-    private JPanel createProductCard(String imagePath, String productName, String price) {
-        JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBorder(BorderFactory.createLineBorder(new Color(169, 169, 169), 1)); // حدود البطاقة بلون رمادي فاتح
-        card.setBackground(new Color(255, 255, 240)); // لون خلفية البطاقة كريمي
-        card.setPreferredSize(new Dimension(200, 300));
-
-        ImageIcon productImage = loadImage(imagePath);
-        JLabel imageLabel = new JLabel(productImage);
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        card.add(imageLabel);
-
-        JLabel nameLabel = new JLabel(productName);
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        nameLabel.setForeground(new Color(51, 51, 102)); // لون النص
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        card.add(nameLabel);
-
-        JLabel priceLabel = new JLabel(price);
-        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        priceLabel.setForeground(new Color(0, 100, 0)); // لون النص للسعر أخضر داكن
-        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        card.add(priceLabel);
-
-        JButton addToCartButton = new JButton("Add to Cart");
-        addToCartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        addToCartButton.setBackground(new Color(72, 209, 204)); // لون زر إضافة للسلة
-        addToCartButton.setForeground(Color.WHITE);
-        addToCartButton.addActionListener(e -> addToCart(new String[] { imagePath, productName, price }));
-        card.add(addToCartButton);
-
-        return card;
-    }
-
-    // دالة لتحميل الصورة
-    private ImageIcon loadImage(String imagePath) {
-        try {
-            // InputStream imageStream = getClass().getResourceAsStream(imagePath);
-            InputStream imageStream = getClass().getClassLoader().getResourceAsStream("images/" + imagePath);
-
-            if (imageStream != null) {
-                Image originalImage = ImageIO.read(imageStream);
-                Image resizedImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // تغيير حجم الصورة
-                return new ImageIcon(resizedImage); // إرجاع الصورة المعدلة
-            } else {
-                System.out.println("Image not found at: " + imagePath);
-                return new ImageIcon(); // إرجاع أيقونة فارغة إذا لم توجد الصورة
-            }
-        } catch (Exception e) {
-            System.out.println("Error loading image from: " + imagePath + " - " + e.getMessage());
-            return new ImageIcon(); // إرجاع أيقونة فارغة إذا حدث خطأ أثناء التحميل
-        }
-    }
-
-    // دالة لإضافة المنتج إلى السلة
-    // دالة لإضافة المنتج إلى السلة
-    private void addToCart(String[] product) {
-        if (isLoggedIn) { // تحقق من حالة تسجيل الدخول
-            cartItems.add(product); // إضافة المنتج إلى القائمة
-            JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart."); // عرض رسالة للمستخدم
-        } else {
-            // إذا لم يكن المستخدم مسجلاً، افتح نافذة تسجيل الدخول
-            openLoginFrame();
-        }
-    }
-
-    // دالة لفتح نافذة السلة
-    private void openCartWindow() {
-        CartWindow cartWindow = new CartWindow(cartItems); // إنشاء نافذة السلة
-        mainContentPanel.removeAll(); // إزالة المكونات السابقة
-        mainContentPanel.add(cartWindow.getPanel(), BorderLayout.CENTER); // إضافة لوحة السلة
-        mainContentPanel.revalidate(); // تحديث المكونات
-        mainContentPanel.repaint(); // إعادة رسم اللوحة
-    }
-
-    // دالة لفتح نافذة إضافة المنتج
-    private void openAddProductWindow() {
-        AddProductWindow addProductWindow = new AddProductWindow(); // إنشاء نافذة إضافة المنتج
-        mainContentPanel.removeAll(); // إزالة المحتويات السابقة
-        mainContentPanel.add(addProductWindow.getPanel(), BorderLayout.CENTER); // إضافة اللوحة الجديدة
-        mainContentPanel.revalidate(); // تحديث المحتويات
-        mainContentPanel.repaint(); // إعادة رسم اللوحة
-    }
-
-    // دالة لفتح نافذة تسجيل الدخول
-    private void openLoginFrame() {
-        new LoginFrame(); // إنشاء نافذة تسجيل الدخول
     }
 
     private JPanel createProductCard(ImageIcon productImage, String productName, String price) {
@@ -281,4 +197,33 @@ public class ClothingStoreApp {
         return card;
     }
 
+    private void openCartWindow() {
+        CartWindow cartWindow = new CartWindow(cartItems);
+        mainContentPanel.removeAll();
+        mainContentPanel.add(cartWindow.getPanel(), BorderLayout.CENTER);
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
+    }
+
+    private void openAddProductWindow() {
+        AddProductWindow addProductWindow = new AddProductWindow();
+        mainContentPanel.removeAll();
+        mainContentPanel.add(addProductWindow.getPanel(), BorderLayout.CENTER);
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
+    }
+
+    private void openLoginFrame() {
+        new LoginFrame();
+        isLoggedIn = true;
+    }
+
+    private void addToCart(String[] product) {
+        if (isLoggedIn) {
+            cartItems.add(product);
+            JOptionPane.showMessageDialog(null, product[1] + " has been added to the cart.");
+        } else {
+            openLoginFrame();
+        }
+    }
 }

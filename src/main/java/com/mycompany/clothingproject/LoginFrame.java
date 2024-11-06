@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class LoginFrame extends JFrame {
+    private ClothingStoreApp app; // مرجع لتطبيق ClothingStoreApp
 
     public LoginFrame() {
         setTitle("Login"); // تعيين عنوان نافذة تسجيل الدخول
@@ -95,7 +96,7 @@ public class LoginFrame extends JFrame {
             if (authenticateUser(username, password)) {
                 JOptionPane.showMessageDialog(this, "Login successful!");
                 // يمكنك استدعاء دالة لتحديث حالة تسجيل الدخول هنا
-                // مثال: updateLoginStatus(true);
+                app.updateLoginStatus(true);
                 dispose(); // إغلاق نافذة تسجيل الدخول
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password.", "Login Failed",
@@ -112,7 +113,8 @@ public class LoginFrame extends JFrame {
                 registerFrame.setLocationRelativeTo(null); // محاذاة النافذة في وسط الشاشة
                 registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // تحديد سلوك النافذة عند الإغلاق
 
-                registerFrame.add(new RegisterUserWindow().getPanel()); // إضافة لوحة تسجيل المستخدم
+                // تمرير كائن التطبيق الحالي عند إنشاء RegisterUserWindow
+                registerFrame.add(new RegisterUserWindow(app).getPanel()); // إضافة لوحة تسجيل المستخدم
                 registerFrame.setVisible(true); // عرض نافذة التسجيل
 
                 dispose(); // إغلاق نافذة تسجيل الدخول
